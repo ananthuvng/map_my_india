@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mapmyindia_flutter/mapmyindia_flutter.dart';
 
 void main() {
   runApp(MyApp());
@@ -63,23 +64,35 @@ class _HomeState extends State<Home> {
     print(position);
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
-    return await Geolocator.getCurrentPosition();
+    return position;
   }
 
   Widget build(BuildContext context) {
+    Position position;
+    String mapImageUrl =
+        'https://apis.mapmyindia.com/console/assets/logo_new.png';
     return Scaffold(
-      body: GestureDetector(
-        onTap: () {
-          setState(() {
-            _determinePosition();
-          });
-        },
-        child: Container(
-          color: Colors.amberAccent,
-          height: 300,
-          width: 300,
-          child: Text('poasition'),
-        ),
+      body: Column(
+        children: [
+          FloatingActionButton(onPressed: () {
+            setState(() async {
+              position = await _determinePosition();
+              mapImageUrl =
+                  MapMyIndiaStillMap("[dffb2b420e148f75b1eead06b2ed6641]")
+                      .getMapImage(
+                position.latitude,
+                position.longitude,
+              );
+              print(mapImageUrl);
+            });
+          }),
+          Container(
+            color: Colors.amberAccent,
+            child: Image(
+              image: NetworkImage(mapImageUrl),
+            ),
+          ),
+        ],
       ),
     );
   }
